@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 
@@ -58,6 +59,9 @@ func (r rebuilder) Rebuild(srcs []string) error {
 		}
 
 		dst := filepath.Join(namespace, key, src)
+		if strings.HasPrefix(src, "/") {
+			dst = filepath.Join(namespace, key) + "/" + src
+		}
 
 		// If no override is set and object already exists in storage, skip it.
 		if !r.override {

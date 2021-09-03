@@ -70,7 +70,12 @@ func (r restorer) Restore(dsts []string) error {
 	}
 
 	for _, dst := range dsts {
-		src := filepath.Join(namespace, key, dst)
+		var src string
+		if strings.HasPrefix(dst, "/") {
+			src = filepath.Join(namespace, key) + "/" + dst
+		} else {
+			src = filepath.Join(namespace, key, dst)
+		}
 
 		level.Info(r.logger).Log("msg", "restoring directory", "local", dst, "remote", src)
 
