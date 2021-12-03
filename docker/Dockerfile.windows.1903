@@ -1,8 +1,16 @@
 # escape=`
+FROM golang:1.17.3 as builder
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+WORKDIR /src
+ENV CGO_ENABLED=0
+COPY . .
+RUN go build -o drone-cache.exe .
+
 FROM mcr.microsoft.com/windows/nanoserver:1903
 USER ContainerAdministrator
 
 ENV GODEBUG=netdns=go
 
-ADD release/windows/amd64/drone-cache.exe C:/drone-cache.exe
+COPY --from=builder /src/drone-cache.exe C:/drone-cache.exe
 ENTRYPOINT [ "C:\\drone-cache.exe" ]
